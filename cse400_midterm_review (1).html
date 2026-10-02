@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CSE 400 Midterm Review</title>
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --card: #ffffff;
+    --text: #16223a;
+    --muted: #5b6b85;
+    --accent: #0B2545;
+    --accent2: #134074;
+    --cyan: #0096C7;
+    --border: #dfe6ef;
+    --good: #1B998B;
+    --good-bg: #e6f4f1;
+    --bad: #C1121F;
+    --bad-bg: #fbeaea;
+    --chip-bg: #eef2f8;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #0b1220;
+      --card: #131c2e;
+      --text: #eef2f8;
+      --muted: #97a5bd;
+      --accent: #8DA9C4;
+      --accent2: #bfe0f2;
+      --cyan: #4cc9f0;
+      --border: #223049;
+      --good: #4fd8c4;
+      --good-bg: #0d2b26;
+      --bad: #ff8a8a;
+      --bad-bg: #3a1414;
+      --chip-bg: #1a2740;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0b1220;
+    --card: #131c2e;
+    --text: #eef2f8;
+    --muted: #97a5bd;
+    --accent: #8DA9C4;
+    --accent2: #bfe0f2;
+    --cyan: #4cc9f0;
+    --border: #223049;
+    --good: #4fd8c4;
+    --good-bg: #0d2b26;
+    --bad: #ff8a8a;
+    --bad-bg: #3a1414;
+    --chip-bg: #1a2740;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 28px 18px 60px;
+  }
+  h1 {
+    font-size: 1.5rem;
+    margin: 4px 0 2px;
+    color: var(--accent);
+  }
+  .subtitle { color: var(--muted); font-size: 0.95rem; margin-bottom: 22px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .cat-list { display: flex; flex-direction: column; gap: 10px; }
+  .cat-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .cat-item:hover { border-color: var(--cyan); }
+  .cat-item.checked { border-color: var(--cyan); background: var(--chip-bg); }
+  .cat-item .left { display: flex; align-items: center; gap: 12px; }
+  .cat-item input { width: 18px; height: 18px; accent-color: var(--cyan); }
+  .cat-name { font-weight: 600; }
+  .cat-sub { color: var(--muted); font-size: 0.82rem; }
+  .cat-count {
+    background: var(--chip-bg);
+    color: var(--accent2);
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 999px;
+  }
+  .cat-item.synth { border-style: dashed; }
+  .row-buttons { display: flex; gap: 10px; margin: 14px 0 6px; flex-wrap: wrap; }
+  button {
+    font-family: inherit;
+    font-size: 0.9rem;
+    border: 1px solid var(--border);
+    background: var(--chip-bg);
+    color: var(--text);
+    padding: 9px 14px;
+    border-radius: 9px;
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--cyan); }
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+    border: none;
+    font-weight: 700;
+    padding: 13px 20px;
+    font-size: 1rem;
+    border-radius: 11px;
+    width: 100%;
+    margin-top: 8px;
+  }
+  .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn-primary:hover:not(:disabled) { filter: brightness(1.1); }
+  .hidden { display: none !important; }
+  .progress-wrap {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px; color: var(--muted); font-size: 0.85rem;
+  }
+  .bar-track { height: 6px; background: var(--chip-bg); border-radius: 4px; overflow: hidden; margin-bottom: 18px; }
+  .bar-fill { height: 100%; background: var(--cyan); transition: width 0.25s; }
+  .q-kicker {
+    font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em;
+    color: var(--cyan); text-transform: uppercase; margin-bottom: 6px;
+  }
+  .q-prompt { font-size: 1.12rem; font-weight: 600; line-height: 1.45; margin-bottom: 18px; }
+  .choice {
+    display: block; width: 100%; text-align: left;
+    background: var(--card); border: 1.5px solid var(--border);
+    border-radius: 11px; padding: 13px 15px; margin-bottom: 10px;
+    font-size: 0.98rem; cursor: pointer; color: var(--text);
+  }
+  .choice:hover:not(:disabled) { border-color: var(--cyan); }
+  .choice.correct { border-color: var(--good); background: var(--good-bg); font-weight: 600; }
+  .choice.incorrect { border-color: var(--bad); background: var(--bad-bg); font-weight: 600; }
+  .choice:disabled { cursor: default; }
+  .feedback {
+    margin-top: 14px; padding: 14px 16px; border-radius: 11px;
+    font-size: 0.92rem; line-height: 1.5;
+  }
+  .feedback.good { background: var(--good-bg); color: var(--good); }
+  .feedback.bad { background: var(--bad-bg); color: var(--bad); }
+  .feedback .label { font-weight: 800; display: block; margin-bottom: 4px; }
+  .nav-row { display: flex; justify-content: flex-end; margin-top: 16px; }
+  .score-hero {
+    text-align: center; padding: 10px 0 6px;
+  }
+  .score-num { font-size: 3rem; font-weight: 800; color: var(--accent); }
+  .score-label { color: var(--muted); }
+  .missed-item {
+    border-left: 3px solid var(--bad);
+    padding: 10px 14px; margin-bottom: 10px; background: var(--chip-bg); border-radius: 8px;
+  }
+  .missed-q { font-weight: 600; margin-bottom: 4px; }
+  .missed-your { color: var(--bad); font-size: 0.88rem; }
+  .missed-correct { color: var(--good); font-size: 0.88rem; }
+  .missed-fb { color: var(--muted); font-size: 0.85rem; margin-top: 4px; }
+  .top-actions { display: flex; justify-content: flex-end; margin-bottom: 6px; }
+  .icon-btn { background: none; border: none; font-size: 1.1rem; cursor: pointer; padding: 4px 8px; }
+  footer-note { color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top-actions">
+    <button class="icon-btn" id="themeToggle" title="Toggle theme">🌓</button>
+  </div>
+
+  <!-- SCREEN 1: PICKER -->
+  <div id="screenPicker">
+    <h1>CSE 400 Midterm Review</h1>
+    <div class="subtitle">Pick which weeks to review. Mix and match, or just do one at a time.</div>
+    <div class="card">
+      <div class="cat-list" id="catList"></div>
+      <div class="row-buttons">
+        <button id="selectAll">Select all</button>
+        <button id="selectNone">Clear</button>
+      </div>
+    </div>
+    <button class="btn-primary" id="startBtn" disabled>Start Quiz</button>
+  </div>
+
+  <!-- SCREEN 2: QUIZ -->
+  <div id="screenQuiz" class="hidden">
+    <div class="progress-wrap">
+      <span id="progressText">Question 1 of 10</span>
+      <span id="scoreText">Score: 0</span>
+    </div>
+    <div class="bar-track"><div class="bar-fill" id="barFill" style="width:0%"></div></div>
+    <div class="card">
+      <div class="q-kicker" id="qKicker">Week 1</div>
+      <div class="q-prompt" id="qPrompt">Question text</div>
+      <div id="choiceList"></div>
+      <div class="feedback hidden" id="feedbackBox"></div>
+      <div class="nav-row">
+        <button class="btn-primary" id="nextBtn" style="width:auto;" disabled>Next</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: RESULTS -->
+  <div id="screenResults" class="hidden">
+    <div class="card score-hero">
+      <div class="score-num" id="finalScore">0 / 0</div>
+      <div class="score-label" id="finalLabel">Nice work</div>
+    </div>
+    <div class="card" id="missedCard">
+      <div style="font-weight:700; margin-bottom:10px;">Questions to review</div>
+      <div id="missedList"></div>
+      <div id="noMissed" class="hidden" style="color:var(--muted);">You got every question right. 🎉</div>
+    </div>
+    <button class="btn-primary" id="restartBtn">Choose different weeks</button>
+  </div>
+
+</div>
+
+<script>
+// ---------------- DATA ----------------
+const CATEGORIES = [
+  { id: "w1", name: "Week 1", sub: "Intro to InfoSec, domains, threats, teams" },
+  { id: "w2", name: "Week 2", sub: "CIA/DAD, security models, cryptography" },
+  { id: "w3", name: "Week 3", sub: "IAM, access control, governance, regulation" },
+  { id: "w4", name: "Week 4", sub: "Threat modeling, STRIDE, risk management" },
+  { id: "w5", name: "Week 5", sub: "Vulnerability mgmt, network architecture, protocols" },
+  { id: "w6", name: "Week 6", sub: "Linux & Windows hardening" },
+  { id: "w7", name: "Week 7", sub: "Active Directory & network device hardening" },
+  { id: "synth", name: "Cross-Week Synthesis", sub: "Questions that connect ideas across multiple weeks", synth: true },
+];
+
+const QUESTIONS = [
+  // ---- WEEK 1 ----
+  { cat:"w1", prompt:"A company's IT policy lets every employee reuse the same weak password across every internal system. What does this describe?",
+    choices:["A threat","A vulnerability","A risk","A control"], correct:1,
+    fb:"The weak, reused password is the weakness itself — it exists whether or not anyone ever tries to exploit it." },
+  { cat:"w1", prompt:"A retail chain's internet-connected HVAC system gets hacked and used as a stepping-stone into the corporate network. Which InfoSec domain is most relevant?",
+    choices:["Cloud Security","Application Security","IoT Security","Mobile Security"], correct:2,
+    fb:"An overlooked 'smart' device became the doorway into the entire network — a textbook IoT Security example." },
+  { cat:"w1", prompt:"An attacker quietly sits inside a company's network for eight months, slowly extracting data without triggering alarms. Which threat category is this?",
+    choices:["DDoS","Ransomware","Social engineering","Advanced Persistent Threat (APT)"], correct:3,
+    fb:"The giveaway is time and stealth — an APT stays hidden long-term rather than striking once." },
+  { cat:"w1", prompt:"True or False: the Purple Team is a separate, permanent department that exists alongside Red Team and Blue Team.",
+    choices:["True","False"], correct:1,
+    fb:"Purple Team is a way of working, not a standing department — Red and Blue Team members collaborating directly." },
+  { cat:"w1", prompt:"In the InfoSec lifecycle, what comes right after 'Implementing Controls'?",
+    choices:["Risk assessment","Monitoring & Detection","Security planning","Incident response"], correct:1,
+    fb:"Once controls are in place, the next step is watching whether they're working." },
+
+  // ---- WEEK 2 ----
+  { cat:"w2", prompt:"Attackers shut off an organization's main and backup power, taking the entire network down. Which part of the DAD triad is this?",
+    choices:["Disclosure","Alteration","Destruction/Denial","Deception"], correct:2,
+    fb:"Nothing was leaked and nothing was changed — the attack made the system unreachable, a pure availability attack." },
+  { cat:"w2", prompt:"A model uses the rule 'no write up' — a lower-integrity subject cannot write to a higher-integrity object. Which model and property?",
+    choices:["Bell-LaPadula — Confidentiality","Biba — Integrity","Clark-Wilson — Availability","Biba — Confidentiality"], correct:1,
+    fb:"'No write up' is Biba's Star Integrity Property. Biba and Bell-LaPadula are mirror images of each other." },
+  { cat:"w2", prompt:"You find a server running an old, unused, insecure service and recommend shutting it down. Which ISO/IEC 19249 principle is this?",
+    choices:["Least Privilege","Attack Surface Minimization","Domain Separation","Defense in Depth"], correct:1,
+    fb:"Every running service, used or not, is a potential entry point. Shutting it down shrinks the attack surface." },
+  { cat:"w2", prompt:"A system lets 100 users communicate securely with only 100 total keys — one key pair per person. What kind of encryption is this?",
+    choices:["Symmetric encryption","Asymmetric encryption","Hashing","HMAC"], correct:1,
+    fb:"Asymmetric encryption needs one key pair per person. Symmetric needs one key per possible pair of people." },
+  { cat:"w2", prompt:"A system stores passwords so they cannot be reversed under any circumstances, with no key involved. What is this?",
+    choices:["Symmetric encryption","Asymmetric encryption","Hashing","PKI"], correct:2,
+    fb:"Encryption is always reversible with the right key. Hashing has no key and is deliberately one-directional." },
+
+  // ---- WEEK 3 ----
+  { cat:"w3", prompt:"An employee logs in successfully, but then gets 'access denied' opening the finance folder. What failed?",
+    choices:["Authentication","Authorization","Identification","Federation"], correct:1,
+    fb:"The login succeeded (authentication worked). What failed was what they're allowed to do — authorization." },
+  { cat:"w3", prompt:"A hospital grants nurses access to charts only for patients assigned to their unit, only during their shift, and only from an approved device. Which access control model is this?",
+    choices:["DAC","MAC","RBAC","ABAC"], correct:3,
+    fb:"The combination of shifting conditions evaluated dynamically together is Attribute-Based Access Control." },
+  { cat:"w3", prompt:"An employee resigns on Friday, but their access isn't removed until the following Wednesday. What does this describe?",
+    choices:["A provisioning failure","A de-provisioning failure","An authentication failure","A federation failure"], correct:1,
+    fb:"This is the identity lifecycle gap — access wasn't revoked promptly when someone left." },
+  { cat:"w3", prompt:"A document titled 'Steps to Reset a User's MFA Device' gives a numbered, step-by-step walkthrough. What type of document is this?",
+    choices:["Policy","Standard","Procedure","Guideline"], correct:2,
+    fb:"The giveaway is 'numbered, step-by-step' — a procedure gives exact steps, more detailed than a standard or policy." },
+  { cat:"w3", prompt:"A small Texas jewelry store accepts credit cards and occasionally ships to Germany and France. Which regulation(s) could apply?",
+    choices:["Only GDPR","Only PCI DSS","Both PCI DSS and GDPR","Neither, the store is too small"], correct:2,
+    fb:"PCI DSS applies due to card processing; GDPR applies due to EU residents' personal data." },
+
+  // ---- WEEK 4 ----
+  { cat:"w4", prompt:"A flaw is found during the initial design meeting, before code is written, versus after launch. Which does 'shift left' favor?",
+    choices:["Finding it during the design meeting","Finding it after launch","Both cost the same","Shift left doesn't apply here"], correct:0,
+    fb:"Shift left means finding and fixing issues as early as possible, when it costs a conversation, not a scramble." },
+  { cat:"w4", prompt:"An attacker sets up a Wi-Fi network named exactly like a coffee shop's real network. Which STRIDE category is this?",
+    choices:["Tampering","Spoofing","Repudiation","Denial of Service"], correct:1,
+    fb:"The fake network pretends to be something it's not — the definition of spoofing." },
+  { cat:"w4", prompt:"A team labels a new vulnerability 'High' risk in a quick meeting, based on collective judgment. Is this qualitative or quantitative?",
+    choices:["Qualitative","Quantitative","Both equally","Neither"], correct:0,
+    fb:"A descriptive category based on expert judgment, not a calculated number, is qualitative." },
+  { cat:"w4", prompt:"In DREAD, which factor asks 'how many users or systems would actually be impacted if this threat were exploited?'",
+    choices:["Damage","Reproducibility","Affected Users","Discoverability"], correct:2,
+    fb:"Damage asks how bad the impact would be. Affected Users asks how wide it would spread." },
+  { cat:"w4", prompt:"A company decides protecting a rarely-used internal tool against an unlikely, low-impact bug isn't worth the effort, and documents doing nothing. Which risk treatment strategy is this?",
+    choices:["Avoid","Mitigate","Transfer","Accept"], correct:3,
+    fb:"They aren't eliminating, reducing, or shifting the risk — they're formally accepting it." },
+
+  // ---- WEEK 5 ----
+  { cat:"w5", prompt:"A team runs Nessus and gets 200 findings. Deciding which matter, assigning ownership, and tracking fixes is which activity?",
+    choices:["Vulnerability scanning","Vulnerability management","Penetration testing","Threat modeling"], correct:1,
+    fb:"Running the scan was scanning. Everything after — prioritizing, assigning, tracking — is management." },
+  { cat:"w5", prompt:"True or False: once two VLANs are configured, they are automatically and completely isolated, with no way for traffic to pass between them.",
+    choices:["True","False"], correct:1,
+    fb:"If a route exists between VLANs (common, since devices need internet access), traffic can cross." },
+  { cat:"w5", prompt:"A firewall notices an incoming packet is a reply to a connection a device inside already started, and allows it through. Is this stateless or stateful?",
+    choices:["Stateless","Stateful"], correct:1,
+    fb:"Recognizing a packet as part of an existing connection requires tracking state over time — that's stateful." },
+  { cat:"w5", prompt:"An admin manages a remote Linux server, and the entire session including the password is sent with no encryption. What protocol is this?",
+    choices:["SSH","HTTPS","Telnet","SFTP"], correct:2,
+    fb:"Telnet sends everything in plaintext, including credentials. SSH was created to replace it." },
+  { cat:"w5", prompt:"An attacker captures a legitimate encrypted login request and resends the exact same data later, hoping to be authenticated again. What is this called?",
+    choices:["Man-in-the-Middle attack","Spoofing","Replay attack","Kerberoasting"], correct:2,
+    fb:"Resending previously captured, legitimate traffic to repeat an action is a replay attack." },
+
+  // ---- WEEK 6 ----
+  { cat:"w6", prompt:"In a LUKS-encrypted partition, what does each 'Key Material' slot actually contain?",
+    choices:["A full copy of all the encrypted data","The master key, encrypted with one user's password","The user's plaintext password","A backup of the LUKS header only"], correct:1,
+    fb:"The data is encrypted once with a master key. Each key slot holds that same master key, re-wrapped per password." },
+  { cat:"w6", prompt:"Which Linux firewall tool is 'a front-end to the front-end' — built to make iptables/nftables simpler?",
+    choices:["netfilter","SELinux","UFW","AppArmor"], correct:2,
+    fb:"UFW sits on top of iptables specifically to make common firewall tasks simple." },
+  { cat:"w6", prompt:"A service account like www-data never needs to log in interactively. What's the correct hardening step?",
+    choices:["Delete the account entirely","Set its shell to /sbin/nologin","Give it a very long password instead","Add it to the sudo group"], correct:1,
+    fb:"The account needs to exist for its service, but should never support interactive shell login." },
+  { cat:"w6", prompt:"Windows Hello lets a user authenticate with a fingerprint, a PIN, or a security key. Which earlier concept does this match?",
+    choices:["The four risk treatment strategies","The three authentication factors","The CIA triad","STRIDE"], correct:1,
+    fb:"PIN = something you know, security key = something you have, fingerprint = something you are." },
+  { cat:"w6", prompt:"Running arp -a shows the same MAC address mapped to two different IP addresses. What does this most likely indicate?",
+    choices:["Normal, expected behavior","Possible ARP poisoning","The DNS server is misconfigured","SMBv1 is still enabled"], correct:1,
+    fb:"ARP has no authentication. One MAC address for two IPs is the fingerprint of ARP poisoning." },
+
+  // ---- WEEK 7 ----
+  { cat:"w7", prompt:"A company wants every computer in Sales, and only Sales, to get a specific screen-lock timeout. Where should this be configured?",
+    choices:["Manually on each Sales computer","A GPO linked to the Sales OU","A GPO linked to the entire Forest","It can't be targeted to one department"], correct:1,
+    fb:"OUs exist specifically to let policy be targeted at a particular group, like Sales." },
+  { cat:"w7", prompt:"An attacker with one low-privilege domain account requests service tickets for high-privilege accounts, then cracks them offline. What is this attack?",
+    choices:["Pass-the-Hash","Kerberoasting","LLMNR poisoning","Golden Ticket"], correct:1,
+    fb:"Requesting a ticket and cracking its password offline, away from any lockout policy, is Kerberoasting." },
+  { cat:"w7", prompt:"An attacker on the same office Wi-Fi answers a broken hostname lookup, pretending to be the requested resource, and gets the victim's auth hash. Which attack?",
+    choices:["Kerberoasting","Golden Ticket","LLMNR/NBT-NS poisoning","Pass-the-Hash"], correct:2,
+    fb:"Responding to a broken name-resolution request while pretending to be the resource is LLMNR/NBT-NS poisoning." },
+  { cat:"w7", prompt:"A newly purchased router is online but its admin login is never changed from the factory default. What's the most likely way it gets compromised?",
+    choices:["A sophisticated zero-day exploit","Someone logging in with the known default credentials","A supply-chain hardware implant","A Golden Ticket attack"], correct:1,
+    fb:"This is the most common real-world way network devices get compromised — no sophistication required." },
+  { cat:"w7", prompt:"A review finds a Domain Admin used on regular workstations, a router's default password unchanged, and LLMNR still enabled. Which pair of principles explains all three?",
+    choices:["Non-repudiation and the CIA triad","Least privilege and attack surface minimization","Federated identity and PKI","The four risk treatment strategies"], correct:1,
+    fb:"Domain Admin misuse violates least privilege; the default password and LLMNR are unnecessary exposure." },
+
+  // ---- CROSS-WEEK SYNTHESIS ----
+  { cat:"synth", prompt:"Least privilege shows up in Week 2 (ISO/IEC 19249), Week 3 (access control), and Week 7 (tiered admin). Which is the clearest real example of it?",
+    choices:["Encrypting a hard drive with LUKS (Week 6)","A Domain Admin account only ever used on Domain Controllers, never everyday workstations (Week 7)","Turning on SMB signing (Week 7)","Running a vulnerability scan (Week 5)"], correct:1,
+    fb:"Keeping a powerful account restricted to only the tasks that need it is least privilege in action." },
+  { cat:"synth", prompt:"STRIDE's 'Spoofing' category (Week 4) means pretending to be something you're not. Which Week 7 attack is a real-world example of spoofing?",
+    choices:["Kerberoasting","LLMNR/NBT-NS poisoning","Golden Ticket","Logging in with default credentials"], correct:1,
+    fb:"An attacker answering a name lookup while pretending to be the requested resource is impersonation — spoofing." },
+  { cat:"synth", prompt:"Week 2 established that hashing is one-way and irreversible. Which Week 7 attack directly depends on that property to even be necessary?",
+    choices:["UFW default-deny rules (Week 6)","Kerberoasting — cracking a stolen ticket by guessing, not reversing (Week 7)","VLAN segmentation (Week 5)","SSL/TLS certificate validation (Week 5)"], correct:1,
+    fb:"Because a hash can't be reversed, an attacker with a stolen ticket has to guess passwords rather than compute the original directly — that's exactly what makes Kerberoasting a guessing game." },
+  { cat:"synth", prompt:"Week 5 introduced 'default-deny' for firewalls and ACLs. Weeks 6 and 7 both apply the same idea. What does default-deny actually mean?",
+    choices:["Allow everything, block a few exceptions","Block everything, allow only specific necessary exceptions","Only block traffic during business hours","Allow only encrypted traffic"], correct:1,
+    fb:"Block everything by default, then explicitly allow only what's actually needed — the same rule for UFW, ACLs, and network device management access." },
+  { cat:"synth", prompt:"Which single Week 3 concept explains why Week 6's 'Windows Hello' isn't really a new idea?",
+    choices:["The CIA triad","The three authentication factors (know/have/are)","Risk treatment strategies","STRIDE"], correct:1,
+    fb:"A PIN, a security key, and a fingerprint are exactly the three authentication factors from Week 3, just built into one product." },
+  { cat:"synth", prompt:"A review finds an unpatched CVE on a router with no ACL restricting who can reach its management interface. Which two earlier-week controls most directly reduce this risk?",
+    choices:["Vulnerability management (Week 5) and default-deny ACLs (Week 5/7)","Single sign-on (Week 3) and Bell-LaPadula (Week 2)","DREAD scoring (Week 4) and GDPR (Week 3)","Purple Team (Week 1) and Clark-Wilson (Week 2)"], correct:0,
+    fb:"Patching the CVE closes the known bug; restricting management access with an ACL closes off who can even try to reach it." },
+  { cat:"synth", prompt:"Week 2's defense in depth means multiple independent layers, so no single failure exposes everything. Which Week 6 example best shows this?",
+    choices:["Using only one strong password","Encrypting the disk, running a firewall, AND requiring SSH keys — all on the same machine","Relying solely on a firewall","Disabling just one unused service"], correct:1,
+    fb:"Three independent protections stacked together mean one failing doesn't expose the whole machine — that's defense in depth." },
+  { cat:"synth", prompt:"Week 1 introduced vulnerability, threat, and risk as distinct ideas. In Week 7, 'a router still running its factory-default password' best represents which of the three?",
+    choices:["A threat","A vulnerability","A risk","A control"], correct:1,
+    fb:"It's a weakness that exists whether or not anyone ever tries to exploit it — exactly the definition of a vulnerability, same logic as the Week 1 reused-password example." },
+];
+
+// ---------------- STATE ----------------
+let selectedCats = new Set();
+let quizPool = [];
+let currentIndex = 0;
+let score = 0;
+let answered = false;
+let missed = [];
+
+// ---------------- THEME ----------------
+const root = document.documentElement;
+document.getElementById('themeToggle').addEventListener('click', () => {
+  const cur = root.getAttribute('data-theme');
+  root.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+});
+
+// ---------------- BUILD PICKER ----------------
+const catListEl = document.getElementById('catList');
+function countFor(catId) { return QUESTIONS.filter(q => q.cat === catId).length; }
+
+CATEGORIES.forEach(cat => {
+  const n = countFor(cat.id);
+  const item = document.createElement('label');
+  item.className = 'cat-item' + (cat.synth ? ' synth' : '');
+  item.innerHTML = `
+    <span class="left">
+      <input type="checkbox" data-cat="${cat.id}">
+      <span>
+        <span class="cat-name">${cat.name}</span><br>
+        <span class="cat-sub">${cat.sub}</span>
+      </span>
+    </span>
+    <span class="cat-count">${n} Q${n===1?'':'s'}</span>
+  `;
+  catListEl.appendChild(item);
+  const checkbox = item.querySelector('input');
+  item.addEventListener('click', (e) => {
+    if (e.target !== checkbox) checkbox.checked = !checkbox.checked;
+    toggleCat(cat.id, checkbox.checked, item);
+  });
+});
+
+function toggleCat(id, checked, item) {
+  if (checked) { selectedCats.add(id); item.classList.add('checked'); }
+  else { selectedCats.delete(id); item.classList.remove('checked'); }
+  document.getElementById('startBtn').disabled = selectedCats.size === 0;
+}
+
+document.getElementById('selectAll').addEventListener('click', () => {
+  document.querySelectorAll('.cat-item input').forEach(cb => {
+    cb.checked = true;
+    toggleCat(cb.dataset.cat, true, cb.closest('.cat-item'));
+  });
+});
+document.getElementById('selectNone').addEventListener('click', () => {
+  document.querySelectorAll('.cat-item input').forEach(cb => {
+    cb.checked = false;
+    toggleCat(cb.dataset.cat, false, cb.closest('.cat-item'));
+  });
+});
+
+// ---------------- START QUIZ ----------------
+document.getElementById('startBtn').addEventListener('click', () => {
+  quizPool = QUESTIONS.filter(q => selectedCats.has(q.cat));
+  shuffle(quizPool);
+  currentIndex = 0; score = 0; missed = [];
+  document.getElementById('screenPicker').classList.add('hidden');
+  document.getElementById('screenQuiz').classList.remove('hidden');
+  renderQuestion();
+});
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
+
+const catNameById = Object.fromEntries(CATEGORIES.map(c => [c.id, c.name]));
+
+function renderQuestion() {
+  answered = false;
+  const q = quizPool[currentIndex];
+  document.getElementById('progressText').textContent = `Question ${currentIndex + 1} of ${quizPool.length}`;
+  document.getElementById('scoreText').textContent = `Score: ${score}`;
+  document.getElementById('barFill').style.width = `${(currentIndex / quizPool.length) * 100}%`;
+  document.getElementById('qKicker').textContent = catNameById[q.cat] || q.cat;
+  document.getElementById('qPrompt').textContent = q.prompt;
+
+  const choiceList = document.getElementById('choiceList');
+  choiceList.innerHTML = '';
+  q.choices.forEach((choiceText, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice';
+    btn.textContent = choiceText;
+    btn.addEventListener('click', () => selectChoice(i));
+    choiceList.appendChild(btn);
+  });
+
+  document.getElementById('feedbackBox').classList.add('hidden');
+  document.getElementById('nextBtn').disabled = true;
+  document.getElementById('nextBtn').textContent = (currentIndex === quizPool.length - 1) ? 'See Results' : 'Next';
+}
+
+function selectChoice(i) {
+  if (answered) return;
+  answered = true;
+  const q = quizPool[currentIndex];
+  const buttons = document.querySelectorAll('.choice');
+  buttons.forEach((b, idx) => {
+    b.disabled = true;
+    if (idx === q.correct) b.classList.add('correct');
+    else if (idx === i) b.classList.add('incorrect');
+  });
+
+  const fb = document.getElementById('feedbackBox');
+  fb.classList.remove('hidden', 'good', 'bad');
+  const isCorrect = i === q.correct;
+  if (isCorrect) {
+    score++;
+    fb.classList.add('good');
+    fb.innerHTML = `<span class="label">Correct.</span>${q.fb}`;
+  } else {
+    missed.push({ q, yourAnswer: q.choices[i] });
+    fb.classList.add('bad');
+    fb.innerHTML = `<span class="label">Not quite.</span>${q.fb}`;
+  }
+  document.getElementById('scoreText').textContent = `Score: ${score}`;
+  document.getElementById('nextBtn').disabled = false;
+}
+
+document.getElementById('nextBtn').addEventListener('click', () => {
+  currentIndex++;
+  if (currentIndex >= quizPool.length) {
+    showResults();
+  } else {
+    renderQuestion();
+  }
+});
+
+function showResults() {
+  document.getElementById('screenQuiz').classList.add('hidden');
+  document.getElementById('screenResults').classList.remove('hidden');
+  document.getElementById('finalScore').textContent = `${score} / ${quizPool.length}`;
+  const pct = Math.round((score / quizPool.length) * 100);
+  let label = 'Keep going.';
+  if (pct === 100) label = 'Perfect score.';
+  else if (pct >= 85) label = 'Strong. Review the ones you missed.';
+  else if (pct >= 60) label = 'Solid start. A bit more review will help.';
+  else label = 'Worth another pass through this material.';
+  document.getElementById('finalLabel').textContent = `${pct}% — ${label}`;
+
+  const missedList = document.getElementById('missedList');
+  missedList.innerHTML = '';
+  if (missed.length === 0) {
+    document.getElementById('noMissed').classList.remove('hidden');
+  } else {
+    document.getElementById('noMissed').classList.add('hidden');
+    missed.forEach(m => {
+      const div = document.createElement('div');
+      div.className = 'missed-item';
+      div.innerHTML = `
+        <div class="missed-q">${m.q.prompt}</div>
+        <div class="missed-your">Your answer: ${m.yourAnswer}</div>
+        <div class="missed-correct">Correct answer: ${m.q.choices[m.q.correct]}</div>
+        <div class="missed-fb">${m.q.fb}</div>
+      `;
+      missedList.appendChild(div);
+    });
+  }
+}
+
+document.getElementById('restartBtn').addEventListener('click', () => {
+  document.getElementById('screenResults').classList.add('hidden');
+  document.getElementById('screenPicker').classList.remove('hidden');
+});
+</script>
+</body>
+</html>
